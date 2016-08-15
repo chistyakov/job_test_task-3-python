@@ -45,6 +45,18 @@ class TestMyCode(unittest.TestCase):
 4
 """)
 
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_first_node_does_not_have_neighbours(self, mock_stdout):
+        data = {
+            1: [2, 3],
+            2: [3, 4],
+            4: [1],
+        }
+        my_code(data, 5)
+        self.assertEqual(mock_stdout.getvalue(), """\
+5
+""")
+
 
 if __name__ == "__main__":
     unittest.main()
