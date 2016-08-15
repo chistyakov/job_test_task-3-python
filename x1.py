@@ -9,7 +9,7 @@ INDENTATION_LENGTH = 4
 
 
 def my_code(obj, current_indentation=0):
-    for key in obj:
+    for key in sorted(obj):
         value = obj[key]
         print_with_indentation(key + ":", current_indentation)
         if type(value) == type(dict()):
