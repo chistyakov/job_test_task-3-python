@@ -11,11 +11,18 @@ INDENTATION_LENGTH = 4
 def my_code(obj, current_indentation=0):
     for key in obj:
         value = obj[key]
-        print(" " * current_indentation + "{0}:".format(key))
+        print_with_indentation(key + ":", current_indentation)
         if type(value) == type(dict()):
             my_code(value, current_indentation+INDENTATION_LENGTH)
         else:
-            print(" " * (current_indentation + INDENTATION_LENGTH) + str(value))
+            print_with_indentation(
+                str(value),
+                current_indentation + INDENTATION_LENGTH
+            )
+
+def print_with_indentation(s, indentation):
+    print("{0}{1}".format(" " * indentation, s))
+
 
 
 class TestMyCode(unittest.TestCase):
