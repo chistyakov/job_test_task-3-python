@@ -3,6 +3,7 @@
 from io import StringIO
 import unittest
 from unittest.mock import patch
+from collections import OrderedDict, Mapping
 
 
 INDENTATION_LENGTH = 4
@@ -12,7 +13,7 @@ def my_code(obj, current_indentation=0):
     for key in sorted(obj):
         value = obj[key]
         print_with_indentation(key + ":", current_indentation)
-        if type(value) == type(dict()):
+        if isinstance(value, Mapping):
             my_code(value, current_indentation+INDENTATION_LENGTH)
         else:
             print_with_indentation(
@@ -54,6 +55,34 @@ second:
 2:
     2/value
 """)
+
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_ordered_dict(self, mock_stdout):
+        my_code(OrderedDict([
+            ('a', 1),
+            ('b', 2),
+            ('c', {'x': 'fff'}),
+            ('d', OrderedDict([
+                ('e', 4), ('f', {'g': 5})
+            ])
+            )
+        ]))
+        self.assertEqual(mock_stdout.getvalue(), """\
+a:
+    1
+b:
+    2
+c:
+    x:
+        fff
+d:
+    e:
+        4
+    f:
+        g:
+            5
+""")
+
 
 
 if __name__ == "__main__":
