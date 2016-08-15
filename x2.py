@@ -5,7 +5,15 @@ from unittest.mock import patch
 from io import StringIO
 
 def my_code(connectivity_matrix_dict, first_node):
-    print("")
+    visited_nodes = []
+    def visit_not_visited_neighbours(node):
+        visited_nodes.append(node)
+        for neighbour in connectivity_matrix_dict.get(node, []):
+            if neighbour not in visited_nodes:
+                visit_not_visited_neighbours(neighbour)
+
+    visit_not_visited_neighbours(first_node)
+    print("\n".join(str(n) for n in visited_nodes))
 
 class TestMyCode(unittest.TestCase):
     @patch('sys.stdout', new_callable=StringIO)
@@ -23,7 +31,7 @@ class TestMyCode(unittest.TestCase):
 """)
 
     @patch('sys.stdout', new_callable=StringIO)
-    def test_acceptance_from_task_1(self, mock_stdout):
+    def test_acceptance_from_task_2(self, mock_stdout):
         data = {
             1: [2, 3],
             2: [3, 4],
