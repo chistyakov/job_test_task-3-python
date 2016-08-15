@@ -5,8 +5,17 @@ import unittest
 from unittest.mock import patch
 
 
-def my_code(d):
-    print("")
+INDENTATION_LENGTH = 4
+
+
+def my_code(obj, current_indentation=0):
+    for key in obj:
+        value = obj[key]
+        print(" " * current_indentation + "{0}:".format(key))
+        if type(value) == type(dict()):
+            my_code(value, current_indentation+INDENTATION_LENGTH)
+        else:
+            print(" " * (current_indentation + INDENTATION_LENGTH) + str(value))
 
 
 class TestMyCode(unittest.TestCase):
