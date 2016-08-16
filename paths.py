@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
+from collections import defaultdict
 from itertools import chain, repeat, filterfalse
 import unittest
-from collections import defaultdict
 
 
 class Component:
@@ -51,7 +51,6 @@ class Component:
         queue = [(source_class(), ())]
         result = defaultdict(dict)
         while queue:
-
             queue = list(chain.from_iterable(
                 result[algorithm.__class__.__name__].setdefault(
                     parents + (item.__class__, ), []).extend(
