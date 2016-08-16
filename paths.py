@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from itertools import chain, repeat
+from itertools import chain, repeat, filterfalse
 import unittest
 from collections import defaultdict
 
@@ -48,24 +48,23 @@ class Component:
 
     #hangs on cycles
     def _get_used_abilites(self, source_class):
-        result = []
-        queue = [(source_class, ())]
-        d = defaultdict(dict)
+        queue = [(source_class(), ())]
+        result = defaultdict(dict)
         while queue:
-            result.extend(queue)
 
             queue = list(chain.from_iterable(
-                d[algorithm.__class__.__name__].setdefault(
-                    parents + (item, ), []).extend(
-                        algorithm.SPECIFICATION.get(item, [])) or
-                zip(algorithm.SPECIFICATION.get(item, []),
-                    repeat(parents + (item, )))
+                result[algorithm.__class__.__name__].setdefault(
+                    parents + (item.__class__, ), []).extend(
+                        i.__class__ for i in algorithm(item)) or
+                zip(algorithm(item),
+                    repeat(parents + (item.__class__, )))
                 for item, parents in queue
                 for algorithm in self.algorithm_list
             ))
 
-        #return {k: d[k] for k in d}
-        return {k: Component._used_abilites_tuples_to_dict(d[k]) for k in d}
+        #return {k: result[k] for k in result}
+        return {k: Component._used_abilites_tuples_to_dict(result[k])
+                for k in result}
 
     @staticmethod
     def _used_abilites_tuples_to_dict(dict_with_tuples):
@@ -74,11 +73,31 @@ class Component:
             new_key = "/" + "/".join(str(c.__name__)
                                      for c in parent_classpath_tuples)
 
-            for child_class in dict_with_tuples[parent_classpath_tuples]:
+            for child_class in unique_everseen(dict_with_tuples[parent_classpath_tuples]):
                 result[new_key].append("{0}/{1}".format(
                     new_key, child_class.__name__))
 
         return {k: result[k] for k in result}
+
+
+
+#https://docs.python.org/dev/library/itertools.html#itertools-recipes
+def unique_everseen(iterable, key=None):
+    "List unique elements, preserving order. Remember all elements ever seen."
+    # unique_everseen('AAAABBBCCDAABBB') --> A B C D
+    # unique_everseen('ABBCcAD', str.lower) --> A B C D
+    seen = set()
+    seen_add = seen.add
+    if key is None:
+        for element in filterfalse(seen.__contains__, iterable):
+            seen_add(element)
+            yield element
+    else:
+        for element in iterable:
+            k = key(element)
+            if k not in seen:
+                seen_add(k)
+                yield element
 
 
 
