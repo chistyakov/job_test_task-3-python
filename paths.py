@@ -71,10 +71,12 @@ class Component:
     def _used_abilites_tuples_to_dict(dict_with_tuples):
         result = defaultdict(list)
         for parent_classpath_tuples in dict_with_tuples:
-            new_key = "/" + "/".join(str(c.__name__) for c in parent_classpath_tuples)
+            new_key = "/" + "/".join(str(c.__name__)
+                                     for c in parent_classpath_tuples)
 
             for child_class in dict_with_tuples[parent_classpath_tuples]:
-                result[new_key].append("{0}/{1}".format(new_key, child_class.__name__))
+                result[new_key].append("{0}/{1}".format(
+                    new_key, child_class.__name__))
 
         return {k: result[k] for k in result}
 
